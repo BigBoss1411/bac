@@ -98,6 +98,9 @@ Route::get('/posts-by-where-or2', function () {
 });
 
 
+
+
+
 Route::get('giai-pt-b2', 'Ptb2Controller@getFormGiaiPtb2');
 Route::get('giai-pt-b2-submit', 'Ptb2Controller@submitPtb2');
 
@@ -105,7 +108,9 @@ Route::get('giai-pt-b2-submit', 'Ptb2Controller@submitPtb2');
 Route::get('login', 'AuthController@getFormLogin');
 
 // Tạo mới dữ liệu
-Route::post('login', 'AuthController@submitLogin');
+Route::post('login', 'AuthController@submitLogin')->name('auth.login');
+Route::get('register', 'AuthController@getFormRegister');
+Route::post('register', 'AuthController@submitRegister')->name('register.submit');
 
 // Cập nhật dữ liệu
 Route::put('posts', 'PostController@update');
@@ -124,24 +129,43 @@ Route::delete('posts', 'PostController@destroy');
 // Route::put('posts', 'PostController@update');
 // Route::delete('posts', 'PostController@update');
 
-//Hiển thị form tạo mới
-Route::get('posts/create', 'PostController@create')->name('posts.create');
-
-//Nhận dữ liệu từ form tạo mới
-Route::post('posts', 'PostController@store')->name('posts.store');
 Route::get('posts', 'PostController@index')->name('posts.index');
 
-// posts/10/edit
 
-// posts/10
-Route::get('posts/{id}/edit', 'PostController@edit')->name('posts.edit');
-Route::put('posts/{id}', 'PostController@update')->name('posts.update');
-Route::delete('posts/{id}', 'PostController@destroy')->name('posts.destroy');
+Route::group([
+    'middleware' => 'auth',
+    'prefix' => 'admin'
+], function () {
+    
+        Route::get('posts/create', 'PostController@create')->name('posts.create');
+
+        //Nhận dữ liệu từ form tạo mới
+        Route::post('posts', 'PostController@store')->name('posts.store');
+
+        // posts/10/edit
+
+        // posts/10
+        Route::get('posts/{id}/edit', 'PostController@edit')->name('posts.edit');
+        Route::put('posts/{id}', 'PostController@update')->name('posts.update');
+        Route::delete('posts/{id}', 'PostController@destroy')->name('posts.destroy');
 
 
-Route::get('categories/{id}/posts', 'CategoryController@posts');
+        Route::get('categories/{id}/posts', 'CategoryController@posts');
 
-Route::get('tags/{id}/posts', 'TagController@posts');
+        Route::get('tags/{id}/posts', 'TagController@posts');
+});
+
+Route::post('logout','AuthController@logout')->name('logout');
+
+Route::get('user-profile', function () {
+    if (Auth::check()) {
+        dd(\Auth::user()->name);
+    } else {
+        echo "Bạn chưa đăng nhập";
+    }
+});
+
+//Hiển thị form tạo mới
 
 
 
@@ -177,8 +201,8 @@ Route::get('fake-category', function () {
 
 Route::get('fake-user', function () {
     $user =  new \App\Models\User;
-    $user->name = 'Quyet Tran';
-    $user->email = 'quyettv@topcv.vn';
+    $user->name = 'BigBoss';
+    $user->email = 'ducbac141199@gmail.com';
     $user->password = bcrypt('123456789');
     $user->save();
 });
@@ -186,7 +210,7 @@ Route::get('fake-user', function () {
 Route::get('fake-profile', function () {
     $profile =  new \App\Models\Profile;
 
-    $profile->id_code = '12341231234';
+    $profile->id_code = '18150175';
     $profile->address = 'Ha Noi';
     $profile->gender = 1;
     $profile->user_id = 1;

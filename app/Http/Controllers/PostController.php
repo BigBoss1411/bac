@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Post;
 use App\Models\Category;
 use App\Models\Tag;
+use Validator;
+use App\Http\Requests\CreateNewPostRequest;
 
 class PostController extends Controller
 {
@@ -16,7 +18,7 @@ class PostController extends Controller
 		return view('posts.create', compact('categories', 'tags'));
 	}
 
-	public function store(Request $request)
+	public function store(CreateNewPostRequest $request)
 	{
 		//php artisan make:model Post
 		$title = $request->input('title');
@@ -75,6 +77,23 @@ class PostController extends Controller
 
 	public function update($id, Request $request)
 	{
+		$validator = Validator::make($request->all(), [
+			'title'=>'required|min:8',
+			'description'=>'required',
+			'content'=>'required',
+			'category_id'=>'required',
+
+		], [
+			'title.required' => 'Tiêu đề là trường bắt buộc',
+			'description.required' => 'Mô tả là trường bắt buộc',
+			'content.required' => 'Nội dung là trường bắt buộc',
+			'category_id.required' => 'Tiêu đề là trường bắt buộc',
+			'title.min' => 'Tiêu đề tối thiểu 8 kí tự',
+		]);
+
+		if ($validator->fails()) {
+			return redirect()->back()-> withErrors($validator)->withInput();
+		}
 		$post = Post::find($id);
 
 		$title = $request->input('title');

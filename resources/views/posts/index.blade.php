@@ -74,12 +74,14 @@
 					      </td>
 					      <td>{{ $post->created_at }}</td>
 					      <td>
-					      	<a href="{{ route('posts.edit', $post->id) }}" class="btn btn-primary">Edit</a>
-					      	<form class="frm-delete" action="{{ route('posts.destroy', $post->id) }}" method="POST">
-					      		@method('delete')
-					      		@csrf
-					      		<button class="btn btn-danger btn-delete" type="button">Delete</button>
-					      	</form>
+					      	@if(Auth::check())
+						      	<a href="{{ route('posts.edit', $post->id) }}" class="btn btn-primary">Edit</a>
+						      	<form class="frm-delete" action="{{ route('posts.destroy', $post->id) }}" method="POST">
+						      		@method('delete')
+						      		@csrf
+						      		<button class="btn btn-danger btn-delete" type="button">Delete</button>
+						      	</form>
+					      	@endif
 					      </td>
 					    </tr>
 					@endforeach
